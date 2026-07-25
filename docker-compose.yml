@@ -24,14 +24,10 @@ services:
     build:
       context: ./VotoHub
     restart: unless-stopped
+    env_file:
+      - ./VotoHub/.env
     environment:
-      DB_TYPE: postgres
       DB_HOST: db
-      DB_PORT: 5432
-      DB_USERNAME: ${DB_USERNAME:-votohub}
-      DB_PASSWORD: ${DB_PASSWORD:-votohub123}
-      DB_DATABASE: ${DB_DATABASE:-votohub}
-      CORS_MODE: ${CORS_MODE:-http://localhost}
     depends_on:
       db:
         condition: service_healthy

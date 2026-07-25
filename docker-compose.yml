@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-votohub}
+      POSTGRES_USER: ${DB_USERNAME:-votohub}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-votohub123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${DB_USERNAME:-votohub} -d ${DB_DATABASE:-votohub}',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - votohub
+
+  api:
+    build:
+      context: ./VotoHub
+    restart: unless-stopped
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-votohub}
+      DB_PASSWORD: ${DB_PASSWORD:-votohub123}
+      DB_DATABASE: ${DB_DATABASE:-votohub}
+      CORS_MODE: ${CORS_MODE:-http://localhost}
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - '3000'
+    networks:
+      - votohub
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - votohub
+
+volumes:
+  postgres_data:
+
+networks:
+  votohub:

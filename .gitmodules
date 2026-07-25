@@ -1,0 +1,3 @@
+[submodule "VotoHub"]
+	path = VotoHub
+	url = https://github.com/gajego/VotoHub

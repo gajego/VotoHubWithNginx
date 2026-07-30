@@ -3,18 +3,18 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5432"
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-votohub}
-      POSTGRES_USER: ${DB_USERNAME:-votohub}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-votohub123}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
           'CMD-SHELL',
-          'pg_isready -U ${DB_USERNAME:-votohub} -d ${DB_DATABASE:-votohub}',
+          'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}',
         ]
       interval: 10s
       timeout: 5s
